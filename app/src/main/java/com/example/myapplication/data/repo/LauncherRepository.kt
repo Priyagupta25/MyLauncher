@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 
 class LauncherRepository @Inject constructor(private val dao: LauncherItemDao) {
-    fun getAllApps() = dao.getHomeItems()
+    fun getAllShortcutApps() = dao.getHomeItems()
 
      suspend fun deleteItem(item: LauncherItemEntity) {
          dao.deleteItem(item)

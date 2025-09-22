@@ -1,9 +1,13 @@
 package com.example.myapplication.ui.main
 
 
+import android.content.Context
+import android.content.pm.LauncherApps
+import android.os.Process
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.Utils.toEntity
+import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.data.local.entity.LauncherItemEntity
 import com.example.myapplication.data.repo.LauncherRepository
@@ -19,9 +23,22 @@ import javax.inject.Inject
 @HiltViewModel
 class LauncherViewModel @Inject constructor(val repo: LauncherRepository) : ViewModel() {
 
-    val apps: StateFlow<List<LauncherItemEntity>> =
-        repo.getAllApps()
+    val shortcut: StateFlow<List<LauncherItemEntity>> =
+        repo.getAllShortcutApps()
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun getAllInstalledApps(context: Context):List<AppInfo> {
+        val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+        return launcherApps.getActivityList(null, Process.myUserHandle()).map { info ->
+            AppInfo(
+                label = info.label.toString(),
+                packageName = info.applicationInfo.packageName,
+                icon = info.getIcon(0),
+                user = info.user
+            )
+        }.sortedBy { it.label.lowercase() }
+
+    }
 
     fun updateFolder(item: LauncherItemEntity) {
         GlobalScope.launch {

@@ -1,8 +1,6 @@
 import android.content.Context
 import android.content.Intent
-import android.content.pm.LauncherApps
 import android.net.Uri
-import android.os.Process
 import android.provider.MediaStore
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.myapplication.ui.compose.AppDrawer
-import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.ui.main.LauncherViewModel
 import com.example.myapplication.ui.compose.MySearchBar
@@ -42,17 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun LauncherOverview(viewModel: LauncherViewModel= hiltViewModel()) {
     val context = LocalContext.current
-    val apps = remember {
-        val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-        launcherApps.getActivityList(null, Process.myUserHandle()).map { info ->
-            AppInfo(
-                label = info.label.toString(),
-                packageName = info.applicationInfo.packageName,
-                icon = info.getIcon(0),
-                user = info.user
-            )
-        }.sortedBy { it.label.lowercase() }
-    }
+    val apps = viewModel.getAllInstalledApps(context)
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     val filteredApps = remember(searchQuery, apps) {
         if (searchQuery.text.isBlank()) apps
@@ -60,7 +47,7 @@ fun LauncherOverview(viewModel: LauncherViewModel= hiltViewModel()) {
     }
     val scope = rememberCoroutineScope()
 
-    val homeShortcuts by viewModel.apps.collectAsState()
+    val homeShortcuts by viewModel.shortcut.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
 
