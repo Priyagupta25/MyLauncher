@@ -1,6 +1,5 @@
-package com.example.myapplication.ui.components
+package com.example.myapplication.ui.compose
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,15 +32,15 @@ import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.Utils
 import com.example.myapplication.Utils.getAppShortcuts
 import com.example.myapplication.Utils.toEntity
-import com.example.myapplication.data.local.DatabaseProvider
 import com.example.myapplication.data.local.entity.LauncherItem
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.example.myapplication.ui.main.LauncherViewModel
 
-@OptIn( ExperimentalFoundationApi::class)
+
+
 @Composable
 fun AppItem(
     app: AppInfo,
+    viewModel: LauncherViewModel
 ) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
@@ -83,11 +82,7 @@ fun AppItem(
             },
             onClick = {
                 expanded = false
-                val db = DatabaseProvider.getDatabase(context)
-                val dao = db.launcherItemDao()
-                GlobalScope.launch {
-                    dao.insertItem(LauncherItem.App(app).toEntity())
-                }
+                viewModel.insertItem(LauncherItem.App(app).toEntity())
             }
         )
         DropdownMenuItem(

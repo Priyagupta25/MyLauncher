@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.components
+package com.example.myapplication.ui.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,6 @@ import com.example.myapplication.ui.main.LauncherViewModel
 fun AppDrawer(
     apps: List<AppInfo>, viewModel: LauncherViewModel,
     onQuery: (TextFieldValue) -> Unit, onLaunch: (AppInfo) -> Unit) {
-    // 👈 vertical centering
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -47,7 +46,7 @@ fun AppDrawer(
                         .clickable { onLaunch(apps.get(i)) },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AppItem(apps.get(i))
+                    AppItem(apps.get(i),viewModel)
                 }
             }
         }

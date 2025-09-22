@@ -25,23 +25,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
-import com.example.myapplication.ui.components.AppDrawer
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.myapplication.ui.compose.AppDrawer
 import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.ui.main.LauncherViewModel
-import com.example.myapplication.ui.components.MySearchBar
+import com.example.myapplication.ui.compose.MySearchBar
 import com.example.myapplication.Utils
 import com.example.myapplication.Utils.toDomain
-import com.example.myapplication.data.local.DatabaseProvider
-import com.example.myapplication.data.local.dao.LauncherItemDao
-import com.example.myapplication.ui.components.DraggableAppIcon
-import com.example.myapplication.ui.components.FolderIcon
+
+import com.example.myapplication.ui.compose.DraggableAppIcon
+import com.example.myapplication.ui.compose.FolderIcon
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LauncherOverview(viewModel: LauncherViewModel) {
-
+fun LauncherOverview(viewModel: LauncherViewModel= hiltViewModel()) {
     val context = LocalContext.current
     val apps = remember {
         val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
@@ -59,15 +58,9 @@ fun LauncherOverview(viewModel: LauncherViewModel) {
         if (searchQuery.text.isBlank()) apps
         else apps.filter { it.label.startsWith(searchQuery.text, ignoreCase = true) }
     }
-
     val scope = rememberCoroutineScope()
 
-    val db = remember { DatabaseProvider.getDatabase(context) }
-    val dao = db.launcherItemDao()
-//    var homeShortcuts by remember { mutableStateOf(listOf<LauncherItem>()) }
     val homeShortcuts by viewModel.apps.collectAsState()
-
-
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSheet by remember { mutableStateOf(false) }
 
@@ -113,7 +106,7 @@ fun LauncherOverview(viewModel: LauncherViewModel) {
                 shortcut.toDomain()
             }
         }
-        ViewPagerShortchuts(shorcuts, viewModel, dao)
+        ViewPagerShortchuts(shorcuts, viewModel)
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             BottomBarApps()
             MySearchBar(onQuery = { })
@@ -150,7 +143,6 @@ fun BottomBarApps() {
 fun ViewPagerShortchuts(
     homeShortcuts: List<LauncherItem>,
     viewModel: LauncherViewModel,
-    dao: LauncherItemDao
 ) {
     val pageSize = 3
     val pages = homeShortcuts.chunked(pageSize)
@@ -165,7 +157,7 @@ fun ViewPagerShortchuts(
             state = pagerState,
             modifier = Modifier.weight(1f)
         ) { page ->
-            HomeGrid(viewModel = viewModel, pages.get(page), dao)
+            HomeGrid(viewModel = viewModel, pages.get(page))
         }
 
         // Pager indicator
@@ -198,7 +190,7 @@ fun ViewPagerShortchuts(
 }
 
 @Composable
-fun HomeGrid(viewModel: LauncherViewModel, gridItem: List<LauncherItem>, dao: LauncherItemDao) {
+fun HomeGrid(viewModel: LauncherViewModel, gridItem: List<LauncherItem>) {
 
     val iconBounds = remember { mutableStateOf(emptyMap<String, Rect>()) }
 
@@ -208,6 +200,7 @@ fun HomeGrid(viewModel: LauncherViewModel, gridItem: List<LauncherItem>, dao: La
             when (item) {
                 is LauncherItem.App -> DraggableAppIcon(
                     app = item,
+                    viewModel,
                     iconBounds = iconBounds,
                     onDrop = { draggedApp, dropOffset ->
                         if (draggedApp is LauncherItem.App) {
@@ -230,7 +223,7 @@ fun HomeGrid(viewModel: LauncherViewModel, gridItem: List<LauncherItem>, dao: La
                             val targetItem = gridItem.firstOrNull { it.id == target?.key }
 
                             if (targetItem != null) {
-                                viewModel.handleDrop(draggedApp, targetItem, dao)
+                                viewModel.handleDrop(draggedApp, targetItem)
                             }
                         }
                     }

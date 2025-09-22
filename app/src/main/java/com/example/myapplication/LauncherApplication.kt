@@ -1,14 +1,16 @@
 package com.example.myapplication
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class App : Application() {
+@HiltAndroidApp
+class LauncherApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
     }
     companion object {
-        lateinit var instance: App
+        lateinit var instance: LauncherApplication
             private set
     }
 }

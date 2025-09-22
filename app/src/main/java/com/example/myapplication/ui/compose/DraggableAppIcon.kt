@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.components
+package com.example.myapplication.ui.compose
 
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -37,10 +37,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.Utils
 import com.example.myapplication.Utils.toEntity
-import com.example.myapplication.data.local.DatabaseProvider
 import com.example.myapplication.data.local.entity.LauncherItem
+import com.example.myapplication.ui.main.LauncherViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -49,6 +50,7 @@ import kotlin.math.roundToInt
 @Composable
 fun DraggableAppIcon(
     app: LauncherItem.App,
+    viewModel: LauncherViewModel,
     iconBounds: MutableState<Map<String, Rect>>,
     onDrop: (LauncherItem, Offset) -> Unit
 ) {
@@ -150,11 +152,8 @@ fun DraggableAppIcon(
             },
             onClick = {
                 expanded = false
-                val db = DatabaseProvider.getDatabase(context)
-                val dao = db.launcherItemDao()
-                GlobalScope.launch {
-                    dao.deleteItem(app.toEntity())
-                }
+                viewModel.deleteItem(app.toEntity())
+
             }
         )
 
