@@ -1,32 +1,24 @@
 package com.example.myapplication.ui.compose
 
+
 import HomeGrid
 import LauncherOverview
-import ViewPagerShortchuts
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-
-
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.myapplication.Utils.toDomain
-import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.ui.main.LauncherViewModel
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -40,24 +32,38 @@ fun HomeScreen(viewModel: LauncherViewModel = hiltViewModel()) {
         modifier = Modifier.fillMaxSize()
     ) { pageIndex ->
         if (pageIndex ==0){
-            val context = LocalContext.current
-            val homeShortcuts by viewModel.shortcut.collectAsState()
-            val apps = viewModel.getAllInstalledApps(context)
-            var shorcuts by remember { mutableStateOf(emptyList<LauncherItem>()) }
-            LaunchedEffect(homeShortcuts) {
 
-                shorcuts =  homeShortcuts.map { shortcut ->
-                    shortcut.apps.forEach() { app ->
-                        val index = apps.indexOfFirst { it.packageName == app.packageName }
-                        if (index == -1)
-                            shortcut.apps.remove(app)
-                        else
-                            app.icon = apps.get(index).icon
+            val apps by viewModel.installedApps
+                .map { it.sortedBy { app -> app.packageName } } // normalize order
+                .collectAsStateWithLifecycle(emptyList())
+            if (!apps.isEmpty()) {
+                val homeShortcuts by viewModel.shortcut.collectAsState()
+
+                // ⚡ Compute shortcuts immutably
+                val shortcuts by remember(homeShortcuts, apps) {
+                    derivedStateOf {
+                        homeShortcuts.map { shortcut ->
+                            shortcut.copy(
+                                apps = shortcut.apps.mapNotNull { app ->
+                                    apps.find { it.packageName == app.packageName }?.let {
+                                        app.copy(icon = it.icon)
+                                    }
+                                }
+                            ).toDomain()
+                        }
                     }
-                    shortcut.toDomain()
                 }
+                // ⚡ Handle deletion as a side effect
+                LaunchedEffect(homeShortcuts, apps) {
+                    homeShortcuts.forEach { shortcut ->
+                        if (shortcut.apps.none { app -> apps.any { it.packageName == app.packageName } }) {
+                            viewModel.deleteItem(shortcut)
+                        }
+                    }
+                }
+
+                HomeGrid(viewModel = viewModel, shortcuts)
             }
-            HomeGrid(viewModel = viewModel,shorcuts)
         }else{
             LauncherOverview(viewModel)
         }

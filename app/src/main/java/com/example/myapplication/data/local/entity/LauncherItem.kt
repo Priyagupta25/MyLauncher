@@ -11,7 +11,7 @@ sealed class LauncherItem {
 
         data class Folder(
             val name: String,
-            val apps: MutableList<AppInfo>
+            val apps: List<AppInfo>
         ) : LauncherItem() {
             override val id: String = "folder_${name}_${hashCode()}" // or UUID
         }

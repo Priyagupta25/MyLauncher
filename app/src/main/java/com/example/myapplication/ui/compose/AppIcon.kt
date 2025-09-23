@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,14 +28,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import androidx.compose.runtime.setValue
-import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.Utils
 import com.example.myapplication.Utils.getAppShortcuts
 import com.example.myapplication.Utils.toEntity
+import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.ui.main.LauncherViewModel
-
 
 
 @Composable

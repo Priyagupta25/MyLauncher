@@ -8,14 +8,10 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherApps
 import android.content.pm.ShortcutInfo
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.UserHandle
 import android.provider.Settings
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.core.graphics.drawable.toBitmap
+import android.util.Log
 import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.data.local.entity.LauncherItemEntity
 import com.example.myapplication.data.local.entity.LauncherItemType
@@ -80,8 +76,6 @@ object Utils {
             .filter { it.provider.packageName == packageName }
 
         if (providers.isNotEmpty()) {
-            // Pick the first widget (you can show your own widget list if multiple)
-            val info = providers[0]
 
             val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
             intent.putExtra(
@@ -132,23 +126,19 @@ object Utils {
     }
 
 
-    fun Drawable.toImageBitmap(
-        width: Int = 128,
-        height: Int = 128
-    ): ImageBitmap {
-        val bmp: Bitmap = this.toBitmap(width, height, Bitmap.Config.ARGB_8888)
-        return bmp.asImageBitmap()
-    }
+    fun LauncherItemEntity.toDomain(): LauncherItem {
+        Log.d("Priya", "appInfo $apps")
+        Log.d("Priya", "label $label")
+        return when (type) {
+            LauncherItemType.APP -> LauncherItem.App(
+                appInfo = apps.get(0)
+            )
 
-    fun LauncherItemEntity.toDomain(): LauncherItem = when (type) {
-        LauncherItemType.APP -> LauncherItem.App(
-            appInfo = apps.get(0)
-        )
-
-        LauncherItemType.FOLDER -> LauncherItem.Folder(
-            name = label,
-            apps = apps
-        )
+            LauncherItemType.FOLDER -> LauncherItem.Folder(
+                name = label,
+                apps = apps
+            )
+        }
     }
 
     fun LauncherItem.toEntity(): LauncherItemEntity =
@@ -157,12 +147,12 @@ object Utils {
                 id =  mutableListOf(appInfo.packageName).hashCode().toLong(),
                 apps = mutableListOf(appInfo),
                 label = "",
-                type = com.example.myapplication.data.local.entity.LauncherItemType.APP
+                type = LauncherItemType.APP
             )
 
             is LauncherItem.Folder -> LauncherItemEntity(
                 id=  apps.toMutableList().hashCode().toLong(),
-                type = com.example.myapplication.data.local.entity.LauncherItemType.FOLDER,
+                type = LauncherItemType.FOLDER,
                 label = name,
                 apps = apps.toMutableList()
             )

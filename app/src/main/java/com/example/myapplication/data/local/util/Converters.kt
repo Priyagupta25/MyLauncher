@@ -9,9 +9,9 @@ import android.util.Base64
 import androidx.room.TypeConverter
 import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItemType
-import java.io.ByteArrayOutputStream
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import java.io.ByteArrayOutputStream
 
 
 class Converters {

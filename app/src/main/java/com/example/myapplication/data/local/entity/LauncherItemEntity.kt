@@ -8,7 +8,7 @@ data class LauncherItemEntity(
     @PrimaryKey val id: Long,
     val type: LauncherItemType, // APP or FOLDER
     val label: String,
-    val apps: MutableList<AppInfo>
+    val apps: List<AppInfo>
 )
 
 
