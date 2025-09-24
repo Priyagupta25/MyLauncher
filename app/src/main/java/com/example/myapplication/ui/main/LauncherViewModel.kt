@@ -35,26 +35,8 @@ class LauncherViewModel @Inject constructor(
     val installedApps: StateFlow<List<AppInfo>> =
         _installedApps.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    init {
-        loadInstalledApps()
-    }
-
-    fun loadInstalledApps(context: Context): List<AppInfo> {
-        val launcherApps = context.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-        return launcherApps.getActivityList(null, Process.myUserHandle()).map { info ->
-            AppInfo(
-                label = info.label.toString(),
-                packageName = info.applicationInfo.packageName,
-                icon = info.getIcon(0),
-                user = info.user
-            )
-        }.sortedBy { it.label.lowercase() }
-
-    }
-
-    private fun loadInstalledApps() {
+    fun loadInstalledApps() {
         viewModelScope.launch(Dispatchers.IO) {
-
             val launcherApps = app.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
 
             val apps = launcherApps.getActivityList(null, Process.myUserHandle()).map { info ->
@@ -72,19 +54,24 @@ class LauncherViewModel @Inject constructor(
 
 
     fun updateFolder(item: LauncherItemEntity) {
-        GlobalScope.launch {
+        viewModelScope.launch {
             repo.updateFolder(item)
         }
     }
 
+    fun updateFolderName(folderId: Int, newName: String) {
+        viewModelScope.launch {
+            repo.updateFolderName(folderId, newName)
+        }
+    }
     fun insertItem(item: LauncherItemEntity) {
-        GlobalScope.launch {
+        viewModelScope.launch {
             repo.insertItem(item)
         }
     }
 
     fun deleteItem(item: LauncherItemEntity) {
-        GlobalScope.launch {
+        viewModelScope.launch {
             repo.deleteItem(item)
         }
     }

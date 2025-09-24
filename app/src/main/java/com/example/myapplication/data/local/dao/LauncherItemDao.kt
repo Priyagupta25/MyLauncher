@@ -14,7 +14,8 @@ interface LauncherItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: LauncherItemEntity): Long
 
-
+    @Query("UPDATE launcher_items SET label = :newName WHERE id = :folderId")
+    suspend fun updateFolderName(folderId: Int, newName: String)
     @Update
     suspend fun updateFolder(folder: LauncherItemEntity)
 

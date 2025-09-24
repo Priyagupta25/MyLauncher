@@ -63,7 +63,7 @@ dependencies {
     }
     implementation(libs.coil.kt)
     implementation(libs.google.accompanist)
-    testImplementation(libs.junit)
+    testImplementation(libs.bundles.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -78,6 +78,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1") {
         exclude(group = "com.intellij", module = "annotations")
     }
+    testImplementation(kotlin("test"))
 
 }
 

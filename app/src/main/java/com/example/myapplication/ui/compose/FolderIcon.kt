@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -91,8 +92,7 @@ fun FolderDialog(folder: LauncherItem.Folder, onDismiss: () -> Unit) {
         title = { Text(folder.name) },
         text = {
             LazyVerticalGrid(columns = GridCells.Fixed(4)) {
-                items(folder.apps.size) { i ->
-                    val app = folder.apps.get(i)
+                items(folder.apps, key = { item -> item.packageName }) { app ->
                     Column(
                         modifier = Modifier
                             .padding(8.dp)
@@ -120,6 +120,7 @@ fun FolderDialog(folder: LauncherItem.Folder, onDismiss: () -> Unit) {
         confirmButton = {}
     )
 }
+
 
 @Composable
 fun DrawableIcon(drawable: Drawable, modifier: Modifier = Modifier) {

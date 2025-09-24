@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ fun AppDrawer(
     ) {
         MySearchBar(onQuery = onQuery)
         Spacer(modifier = Modifier.height(10.dp))
+
         LazyVerticalGrid(
             contentPadding = PaddingValues(8.dp),
             columns = GridCells.Adaptive(minSize = 80.dp),
@@ -39,14 +41,14 @@ fun AppDrawer(
                 .fillMaxHeight(0.8f) // Take 80% of screen
                 .padding(8.dp)
         ) {
-            items(apps.size) { i ->
+            items(apps, key = { item -> item.packageName }) { item ->
                 Column(
                     modifier = Modifier
                         .padding(8.dp)
-                        .clickable { onLaunch(apps.get(i)) },
+                        .clickable { onLaunch(item) },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AppItem(apps.get(i),viewModel)
+                    AppItem(item, viewModel)
                 }
             }
         }
