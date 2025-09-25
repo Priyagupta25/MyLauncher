@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.data.local.util
 
 import android.annotation.SuppressLint
 import android.app.admin.DevicePolicyManager
@@ -10,6 +10,7 @@ import android.content.pm.LauncherApps
 import android.content.pm.ShortcutInfo
 import android.net.Uri
 import android.os.UserHandle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import com.example.myapplication.data.local.entity.LauncherItem
@@ -124,6 +125,23 @@ object Utils {
             userHandle
         ) ?: emptyList()
     }
+
+
+    fun getCameraAppPackageName(context: Context): String? {
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val resolveInfo = context.packageManager.resolveActivity(
+            cameraIntent,
+            0
+        )
+        return resolveInfo?.activityInfo?.packageName
+    }
+
+    fun getDialerAppPackageName(context: Context): String? {
+        val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:123"))
+        val resolveInfo = context.packageManager.resolveActivity(dialIntent, 0)
+        return resolveInfo?.activityInfo?.packageName
+    }
+
 
 
     fun LauncherItemEntity.toDomain(): LauncherItem {

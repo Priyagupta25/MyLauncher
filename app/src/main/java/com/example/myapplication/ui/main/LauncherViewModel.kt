@@ -8,10 +8,10 @@ import android.os.Process
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.myapplication.Utils.toEntity
 import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.data.local.entity.LauncherItemEntity
+import com.example.myapplication.data.local.util.Utils.toEntity
 import com.example.myapplication.data.repo.LauncherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

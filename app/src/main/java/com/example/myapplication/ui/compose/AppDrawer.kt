@@ -38,7 +38,7 @@ fun AppDrawer(
             contentPadding = PaddingValues(8.dp),
             columns = GridCells.Adaptive(minSize = 80.dp),
             modifier = Modifier
-                .fillMaxHeight(0.8f) // Take 80% of screen
+                .fillMaxHeight(1f) // Take 80% of screen
                 .padding(8.dp)
         ) {
             items(apps, key = { item -> item.packageName }) { item ->

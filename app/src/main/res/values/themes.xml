@@ -12,7 +12,7 @@
         <item name="android:windowLightNavigationBar">true</item>
     </style>
 
-    <style name="Wallpaper" parent="android:Theme.Material.NoActionBar">
+    <style name="Wallpaper" parent="android:Theme.Material.Light.NoActionBar">
     <item name="android:windowShowWallpaper">true</item>
     <item name="android:windowBackground">@android:color/transparent</item>
     <item name="android:popupAnimationStyle">@style/WindowAnimationTransition</item>

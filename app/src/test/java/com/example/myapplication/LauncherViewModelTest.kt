@@ -4,11 +4,11 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
-import com.example.myapplication.Utils.toEntity
 import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItem
 import com.example.myapplication.data.local.entity.LauncherItemEntity
 import com.example.myapplication.data.local.entity.LauncherItemType
+import com.example.myapplication.data.local.util.Utils.toEntity
 import com.example.myapplication.data.repo.LauncherRepository
 import com.example.myapplication.ui.main.LauncherViewModel
 import io.mockk.coVerify

@@ -1,8 +1,11 @@
 package com.example.myapplication.ui.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -28,11 +31,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.myapplication.Utils
-import com.example.myapplication.Utils.getAppShortcuts
-import com.example.myapplication.Utils.toEntity
 import com.example.myapplication.data.local.entity.AppInfo
 import com.example.myapplication.data.local.entity.LauncherItem
+import com.example.myapplication.data.local.util.Utils
+import com.example.myapplication.data.local.util.Utils.getAppShortcuts
+import com.example.myapplication.data.local.util.Utils.toEntity
 import com.example.myapplication.ui.main.LauncherViewModel
 
 
@@ -43,124 +46,133 @@ fun AppItem(
 ) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
+    Box {
+        Box(
+            modifier = Modifier
+                .padding(8.dp)
+                .size(72.dp)
+                .combinedClickable(
+                    onClick = { Utils.launchApp(context, app.packageName) },
+                    onLongClick = { expanded = true }
+                ),
 
-    Box(
-        modifier = Modifier
-            .padding(8.dp)
-            .size(72.dp)
-            .combinedClickable(
-                onClick = { Utils.launchApp(context, app.packageName) },
-                onLongClick = { expanded = true }
-            ),
-
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            AsyncImage(
-                model = app.icon,
-                contentDescription = app.label,
-                modifier = Modifier.size(48.dp)
-            )
-            Text(
-                text = app.label,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                AsyncImage(
+                    model = app.icon,
+                    contentDescription = app.label,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = app.label,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
-    }
 
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false }
-    ) {
-        DropdownMenuItem(
-            text = { Text("Add Shortcut") },
-            leadingIcon = {
-                Icon(Icons.Default.Edit, contentDescription = null)
-            },
-            onClick = {
-                expanded = false
-                viewModel.insertItem(LauncherItem.App(app).toEntity())
-            }
-        )
-        DropdownMenuItem(
-            text = { Text("App Info") },
-            leadingIcon = {
-                Icon(Icons.Default.Info, contentDescription = null)
-            },
-            onClick = {
-                expanded = false
-                Utils.openAppInfo(context, app.packageName)
-            }
-        )
-        DropdownMenuItem(
-            text = { Text("Edit") },
-            leadingIcon = {
-                Icon(Icons.Default.Edit, contentDescription = null)
-            },
-            onClick = {
-                expanded = false
-                // open edit UI (rename, shortcut, etc.)
-            }
-        )
-        if (Utils.canUninstall(context, app.packageName)) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.background(
+                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+            )
+        ) {
             DropdownMenuItem(
-                text = { Text("Uninstall") },
+                text = { Text("Add Shortcut") },
                 leadingIcon = {
-                    Icon(Icons.Default.Delete, contentDescription = null)
+                    Icon(Icons.Default.Edit, contentDescription = null)
                 },
                 onClick = {
                     expanded = false
-                    Utils.uninstallApp(context, app.packageName)
-                    // open edit UI (rename, shortcut, etc.)
+                    viewModel.insertItem(LauncherItem.App(app).toEntity())
                 }
             )
-        }else{
             DropdownMenuItem(
-                text = { Text("Pause app") },
+                text = { Text("App Info") },
                 leadingIcon = {
-                    Icon(Icons.Default.Lock, contentDescription = null)
+                    Icon(Icons.Default.Info, contentDescription = null)
                 },
                 onClick = {
                     expanded = false
-                    Utils.disableApp(context, app.packageName)
-                    // open edit UI (rename, shortcut, etc.)
+                    Utils.openAppInfo(context, app.packageName)
                 }
             )
-        }
-        if (Utils.hasAppWidgets(context, app.packageName)) {
             DropdownMenuItem(
-                text = { Text("WIDGETS") },
+                text = { Text("Edit") },
                 leadingIcon = {
-                    Icon(Icons.Default.Menu, contentDescription = null)
+                    Icon(Icons.Default.Edit, contentDescription = null)
                 },
                 onClick = {
                     expanded = false
-                    Utils.openWidgetPicker(context, app.packageName)
                     // open edit UI (rename, shortcut, etc.)
                 }
             )
+            if (Utils.canUninstall(context, app.packageName)) {
+                DropdownMenuItem(
+                    text = { Text("Uninstall") },
+                    leadingIcon = {
+                        Icon(Icons.Default.Delete, contentDescription = null)
+                    },
+                    onClick = {
+                        expanded = false
+                        Utils.uninstallApp(context, app.packageName)
+                        // open edit UI (rename, shortcut, etc.)
+                    }
+                )
+            } else {
+                DropdownMenuItem(
+                    text = { Text("Pause app") },
+                    leadingIcon = {
+                        Icon(Icons.Default.Lock, contentDescription = null)
+                    },
+                    onClick = {
+                        expanded = false
+                        Utils.disableApp(context, app.packageName)
+                        // open edit UI (rename, shortcut, etc.)
+                    }
+                )
+            }
+            if (Utils.hasAppWidgets(context, app.packageName)) {
+                DropdownMenuItem(
+                    text = { Text("WIDGETS") },
+                    leadingIcon = {
+                        Icon(Icons.Default.Menu, contentDescription = null)
+                    },
+                    onClick = {
+                        expanded = false
+                        Utils.openWidgetPicker(context, app.packageName)
+                        // open edit UI (rename, shortcut, etc.)
+                    }
+                )
 
-        }
-        if(Utils.hasShortcuts(context, app.packageName, app.user)){
-            val shortcuts = remember { getAppShortcuts(context, app.packageName, app.user) }
+            }
+            if (Utils.hasShortcuts(context, app.packageName, app.user)) {
+                val shortcuts = remember { getAppShortcuts(context, app.packageName, app.user) }
 
-            if (shortcuts.isNotEmpty()) {
-                Text("Shortcuts", style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(8.dp))
-
-                shortcuts.forEach { shortcut ->
-                    DropdownMenuItem(
-                        text = { Text("WIDGETS") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Menu, contentDescription = null)
-                        },
-                        onClick = {
-                            expanded = false
-                            Utils.openWidgetPicker(context, app.packageName)
-                            // open edit UI (rename, shortcut, etc.)
-                        }
+                if (shortcuts.isNotEmpty()) {
+                    Text(
+                        "Shortcuts",
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.padding(8.dp)
                     )
+
+                    shortcuts.forEach { shortcut ->
+                        DropdownMenuItem(
+                            text = { Text("WIDGETS") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Menu, contentDescription = null)
+                            },
+                            onClick = {
+                                expanded = false
+                                Utils.openWidgetPicker(context, app.packageName)
+                                // open edit UI (rename, shortcut, etc.)
+                            }
+                        )
+                    }
                 }
             }
         }

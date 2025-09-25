@@ -34,8 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.Utils
 import com.example.myapplication.data.local.entity.LauncherItem
+import com.example.myapplication.data.local.util.Utils
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 
 @Composable
@@ -59,7 +59,7 @@ fun FolderIcon(folder: LauncherItem.Folder, iconBounds: SnapshotStateMap<String,
                 )
                 iconBounds[folder.id] = rect
             }
-            .background(Color.LightGray, RoundedCornerShape(72.dp)),
+            .background(Color.LightGray.copy(alpha = 0.7f), RoundedCornerShape(72.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -92,7 +92,7 @@ fun FolderDialog(folder: LauncherItem.Folder, onDismiss: () -> Unit) {
         title = { Text(folder.name) },
         text = {
             LazyVerticalGrid(columns = GridCells.Fixed(4)) {
-                items(folder.apps, key = { item -> item.packageName }) { app ->
+                items(folder.apps) { app ->
                     Column(
                         modifier = Modifier
                             .padding(8.dp)

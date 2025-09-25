@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.myapplication.Utils
-import com.example.myapplication.Utils.toEntity
 import com.example.myapplication.data.local.entity.LauncherItem
+import com.example.myapplication.data.local.util.Utils
+import com.example.myapplication.data.local.util.Utils.toEntity
 import com.example.myapplication.ui.main.LauncherViewModel
 import kotlin.math.roundToInt
 
